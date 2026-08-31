@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0d0c" />
+    <title>Voxline — Prompt Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading Prompt Studio"><div class="loader-mark">V</div><strong>Preparing your studio</strong><span>Loading saved workspace…</span></div>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <a class="brand" href="#"><span class="brand-mark">V</span><span>voxline</span></a>
+        <nav>
+          <button class="nav-item active" data-view="studio"><span>⌘</span> Prompt studio</button>
+          <button class="nav-item" data-view="library"><span>▦</span> Prompt library</button>
+          <button class="nav-item" data-view="compare"><span>⇄</span> Compare versions</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <button class="nav-item" id="commandButton"><span>⌘</span> Command menu <kbd>⌘K</kbd></button>
+          <div class="profile"><span class="avatar">MC</span><div><strong>Manish C.</strong><small>Workspace owner</small></div><button aria-label="Profile menu">···</button></div>
+        </div>
+      </aside>
+
+      <main>
+        <section id="studioView" class="view">
+          <header class="topbar">
+            <div class="crumb"><span>Prompt library</span><i>/</i><strong id="projectName">New voice agent</strong><span class="draft-pill">DRAFT</span></div>
+            <div class="top-actions"><span class="save-state" id="saveState"><b></b> Saved just now</span><button class="icon-btn" id="undoBtn" title="Undo">↶</button><button class="icon-btn" id="redoBtn" title="Redo">↷</button><button class="quiet-btn" id="compareBtn">Compare</button><button class="primary-btn" id="saveVersionBtn">Save version <span>⌘↵</span></button></div>
+          </header>
+          <div class="workspace">
+            <aside class="config-rail" id="configRail">
+              <div class="rail-heading"><span>CONFIGURE</span><div><button class="rail-collapse" id="collapseRail" aria-expanded="true" aria-controls="configRail" title="Collapse configuration steps">‹</button><button class="small-plus" id="newProject">+</button></div></div>
+              <div class="stepper">
+                <button class="step active" data-panel="basics"><span>01</span><i class="step-check" aria-hidden="true">✓</i><b>Project basics</b></button>
+                <button class="step" data-panel="persona"><span>02</span><i class="step-check" aria-hidden="true">✓</i><b>Voice & character</b><em class="count" id="traitCount">0</em></button>
+                <button class="step" data-panel="workflow"><span>03</span><i class="step-check" aria-hidden="true">✓</i><b>Workflow</b></button>
+                <button class="step" data-panel="pronunciation"><span>04</span><i class="step-check" aria-hidden="true">✓</i><b>Pronunciation</b><em class="count lime" id="pronunciationCount">On</em></button>
+                <button class="step" data-panel="guardrails"><span>05</span><i class="step-check" aria-hidden="true">✓</i><b>Guardrails</b><em class="count" id="guardrailCount">0</em></button>
+              </div>
+              <div class="rail-footer"><span class="progress"><b id="progressBar"></b></span><small id="progressText">0 of 5 sections configured</small></div>
+            </aside>
+
+            <section class="editor-region">
+              <div class="config-panel active" id="basics">
+                <div class="panel-kicker">01 / FOUNDATION</div><h1>Give your agent a clear job.</h1><p class="panel-lead">Start with the purpose, operating context, and a successful outcome.</p>
+                <div class="field-grid"><label>Agent name <input id="nameInput" placeholder="e.g. Maya, support guide" /></label><label>Target model <select id="modelSelect"><option>OpenAI GPT</option><option>Anthropic Claude</option><option>Google Gemini</option><option>Qwen</option><option>Meta Llama</option><option>Mistral</option><option>DeepSeek</option><option>Other / custom model</option></select></label><label id="customModelField" hidden>Custom model name <input id="customModelInput" placeholder="Optional model name" /></label><label>Organisation <input id="orgInput" placeholder="Optional" /></label><label>Region / language <input id="regionInput" value="India / English" /></label><label>Tags <input id="tagsInput" placeholder="e.g. onboarding, APAC" /></label><label class="wide">Agent role & success outcome <textarea id="outcomeInput" placeholder="Help callers resolve account-access issues quickly and safely, then leave them knowing the next step."></textarea></label><label class="wide">Approved escalation destination <input id="escalationInput" placeholder="e.g. Tier 2 support queue, +91 …" /></label></div>
+                <button class="generate-btn" id="generateBasics" data-save-step="basics">Save step 1 <span>→</span></button>
+              </div>
+
+              <div class="config-panel" id="persona">
+                <div class="panel-kicker">02 / PERSONALITY</div><h1>How should they sound?</h1><p class="panel-lead">Traits become precise, spoken behaviours—not an adjective list.</p>
+                <div class="search-wrap"><span>⌕</span><input id="traitSearch" placeholder="Search traits" /></div><div class="trait-groups" id="traitGroups"></div>
+                <label class="custom-field">Custom trait or brand voice <input id="customTrait" placeholder="e.g. Warm, direct, and never overly familiar" /></label>
+                <button class="generate-btn" id="generatePersona" data-save-step="persona">Save step 2 <span>→</span></button>
+              </div>
+
+              <div class="config-panel" id="workflow">
+                <div class="panel-kicker">03 / WORKFLOW</div><h1>Choose one path.</h1><p class="panel-lead">Use a proven scenario, or turn your own notes into a reviewable call flow.</p>
+                <div class="mode-switch"><button class="mode active" data-mode="template">Scenario template</button><button class="mode" data-mode="custom">Describe my own flow</button></div>
+                <div id="templateMode"><label>Find a scenario <div class="search-wrap"><span>⌕</span><input id="templateSearch" placeholder="Search 30+ customer-service scenarios" /></div></label><div class="template-list" id="templateList"></div></div>
+                <div id="customMode" hidden><label>Describe the call flow <textarea id="customFlow" rows="8" placeholder="Who calls and why? What should the agent collect or explain? What systems are available? What must it never do? When should it escalate?"></textarea></label><p class="helper">We’ll mark missing tools, policies, and approvals as questions—never invent them.</p></div>
+                <button class="generate-btn" id="generateWorkflow" data-save-step="workflow">Save step 3 <span>→</span></button>
+              </div>
+
+              <div class="config-panel" id="pronunciation">
+                <div class="panel-kicker">04 / SPOKEN CLARITY</div><div class="toggle-heading"><div><h1>Natural spoken pronunciation</h1><p class="panel-lead">Add precise speaking rules for information callers need to hear correctly.</p></div><label class="switch"><input id="pronunciationToggle" type="checkbox" checked /><span></span></label></div>
+                <div id="pronunciationOptions"><p class="subhead">INCLUDE RULES FOR</p><div class="check-grid" id="pronunciationChecks"></div><div class="info-callout"><span>i</span><p>The generated section stays editable. Turning this off later removes only the unchanged baseline.</p></div></div>
+                <button class="generate-btn" id="generatePronunciation" data-save-step="pronunciation">Save step 4 <span>→</span></button>
+              </div>
+
+              <div class="config-panel" id="guardrails">
+                <div class="panel-kicker">05 / SAFETY POLICY</div><h1>Set clear, useful boundaries.</h1><p class="panel-lead">Each policy adds allowed scope, a safe response pattern, and the next appropriate step.</p><div class="guardrail-groups" id="guardrailGroups"></div><label class="review-toggle"><input id="reviewMode" type="checkbox" /> <span><strong>Authorised safety robustness review</strong><small>I confirm I’m authorised to perform defensive internal review.</small></span></label><div id="reviewChecklist" class="review-checklist" hidden></div><button class="generate-btn" id="generateGuardrails" data-save-step="guardrails">Save step 5 <span>✓</span></button><div class="final-generate hidden" id="finalGenerateWrap"><span>All five steps are saved.</span><button class="primary-btn" id="generatePromptFinal">Generate Prompt <span>→</span></button></div>
+              </div>
+
+              <div class="prompt-canvas" id="promptCanvas">
+                <div class="canvas-head"><div><span class="eyebrow">EDITABLE SYSTEM PROMPT</span><div class="chips" id="configChips"></div></div><div class="canvas-actions"><button class="quiet-btn" id="copyBtn">Copy</button><button class="quiet-btn" id="downloadBtn">Download</button></div></div>
+                <div class="editor-toolbar"><button id="findBtn">⌕ Find</button><span></span><button id="wordCount">0 words</button><button id="lineCount">0 lines</button></div>
+                <textarea id="promptEditor" spellcheck="false" aria-label="Editable system prompt"></textarea>
+                <div class="canvas-footer"><span class="trace"><i></i> Generated from <button id="traceBtn">configuration settings</button></span><span id="editorStatus">All changes are saved locally</span></div>
+              </div>
+            </section>
+
+            <aside class="health-panel">
+              <div class="health-head"><span>PROMPT HEALTH</span><button id="healthRefresh" title="Refresh prompt health">↻</button></div><div class="health-score"><div class="score-ring" id="scoreRing"><strong id="healthScore">78</strong><small>/100</small></div><div><strong id="healthLabel">Ready for review</strong><p id="healthDesc">A few details need attention.</p></div></div><p class="health-score-note" id="healthScoreNote"></p>
+              <div class="health-list" id="healthList"></div>
+              <div class="section-sources"><span>SECTION SOURCES</span><div id="sourceList"></div></div>
+              <div class="version-tease"><span>VERSION HISTORY</span><strong id="versionTitle">No saved versions</strong><p id="versionDesc">Save a named snapshot when you’re ready.</p><button id="viewHistory">View history →</button></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="libraryView" class="view hidden"><header class="topbar"><div class="crumb"><strong>Prompt library</strong><span class="draft-pill">LOCAL WORKSPACE</span></div><button class="primary-btn" id="libraryNew">Create prompt <span>+</span></button></header><div class="library-content"><div class="library-title"><div><span class="eyebrow">YOUR WORKSPACE</span><h1>Voice agent prompts</h1><p>Every prompt is editable, traceable, and versioned.</p></div><div class="library-search"><span>⌕</span><input id="librarySearch" placeholder="Search prompts" /></div></div><div class="filters"><button class="filter active">All prompts</button><button class="filter">Draft</button><button class="filter">Approved</button></div><div class="project-grid" id="projectGrid"></div></div></section>
+
+        <section id="compareView" class="view hidden"><header class="topbar"><div class="crumb"><span>Prompt library</span><i>/</i><strong>Compare versions</strong></div><button class="quiet-btn" id="backToStudio">← Back to studio</button></header><div class="compare-content"><div class="compare-title"><span class="eyebrow">VERSION WORKSPACE</span><h1>Compare versions</h1><p>Choose any two versions and review their complete prompts in parallel.</p></div><div class="version-pickers"><label>Base version <select id="baseVersion"></select></label><span>→</span><label>Compare with <select id="compareVersion"></select></label><button class="primary-btn" id="runCompare">Compare</button></div><div class="diff-summary" id="diffSummary"></div><div class="side-by-side-diff"><section><div class="diff-head"><strong id="baseVersionLabel">Base version</strong></div><pre id="basePrompt"></pre></section><section><div class="diff-head"><strong id="comparisonVersionLabel">Comparison version</strong><button id="downloadDiff">Download .md</button></div><pre id="comparisonPrompt"></pre></section></div><div class="diff-grid"><aside><div class="diff-head"><strong>Configuration changes</strong><button id="restoreVersion">Restore comparison as draft</button></div><div id="configDiff"></div><div class="review-note"><strong>Review note</strong><textarea id="reviewNote" placeholder="Add a note to this comparison…"></textarea><button class="quiet-btn" id="markRevision">Mark for revision</button></div></aside></div><pre id="diffOutput" class="sr-only"></pre></div></section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop hidden" id="versionModal"><div class="modal"><button class="modal-close" data-close="versionModal">×</button><span class="eyebrow">IMMUTABLE SNAPSHOT</span><h2>Save version</h2><p>This captures the prompt and its complete configuration.</p><label>Change note <input id="versionNote" placeholder="e.g. Added safer identity verification rules" /></label><label>Status <select id="versionStatus"><option>Draft</option><option>Review</option><option>Approved</option><option>Production</option><option>Deprecated</option></select></label><button class="primary-btn wide-btn" id="confirmSave">Save version</button></div></div>
+    <div class="modal-backdrop hidden" id="downloadModal"><div class="modal"><button class="modal-close" data-close="downloadModal">×</button><span class="eyebrow">EXPORT</span><h2>Download current draft</h2><p>Includes unresolved-placeholder notice when needed.</p><div class="download-options"><button data-format="md">Markdown <small>.md with metadata</small></button><button data-format="txt">Plain text <small>Copy-ready prompt</small></button><button data-format="json">JSON <small>Prompt + configuration</small></button></div></div></div>
+    <div class="modal-backdrop hidden" id="regenerateModal"><div class="modal"><button class="modal-close" data-close="regenerateModal">×</button><span class="eyebrow">DIRECT EDITS DETECTED</span><h2>Update only the generated section?</h2><p id="regenerateMessage">Your direct edits are protected. Choose how this configuration update should affect the draft.</p><div class="download-options"><button id="keepManual">Keep my edited section <small>Save configuration changes without changing the prompt text.</small></button><button id="applySection">Update this generated section <small>Other direct edits remain untouched.</small></button></div></div></div>
+    <div class="command-palette hidden" id="commandPalette"><div class="command-box"><input id="commandSearch" placeholder="Type a command…" autofocus /><button data-command="studio">Open prompt studio <kbd>⌘ 1</kbd></button><button data-command="library">Open prompt library <kbd>⌘ 2</kbd></button><button data-command="compare">Compare versions <kbd>⌘ 3</kbd></button><button data-command="save">Save version <kbd>⌘ ↵</kbd></button></div></div>
+    <div id="toast" role="status"></div><script src="app.js"></script>
+  </body>
+</html>
